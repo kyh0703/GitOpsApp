@@ -38,4 +38,4 @@ jobs:
           push: true
           tags: |
             100.100.103.167:5000/kyh-test:latest
-            100.100.103.167:5000/kyh0test:${{ env.RELEASE_VERSION }}
+            100.100.103.167:5000/kyh-test:${{ env.RELEASE_VERSION }}
