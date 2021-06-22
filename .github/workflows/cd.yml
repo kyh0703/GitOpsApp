@@ -53,9 +53,14 @@ jobs:
       - name: Commit And Push
         run: |
           cd ./GitOpsConfig/resource/helm
-          echo "sed -E 's/^(image[[:blank:]]*:[[:blank:]]*).*/\1100.100.103.167:5000\/kyh-test:${{ env.RELEASE_VERSION }}/' values.yaml"
-          sed -E 's/^(image[[:blank:]]*:[[:blank:]]*).*/\1100.100.103.167:5000\/kyh-test:${{ env.RELEASE_VERSION }}/' values.yaml
+          echo "sed -i -E 's/^(image[[:blank:]]*:[[:blank:]]*).*/\1100.100.103.167:5000\/kyh-test:${{ env.RELEASE_VERSION }}/' values.yaml"
+          sed -i -E 's/^(image[[:blank:]]*:[[:blank:]]*).*/\1100.100.103.167:5000\/kyh-test:${{ env.RELEASE_VERSION }}/' values.yaml
+          echo "1"
           git config --global user.email "github-actions@github.com"
+          echo "2"
           git config --global user.name "github-actions"
+          echo "3"
           git commit -am "Update image tag"
+          echo "4"
           git push -u origin master
+          echo "5"
