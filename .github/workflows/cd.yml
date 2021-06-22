@@ -52,10 +52,13 @@ jobs:
 
       - name: Commit And Push
         run: |
+          ls -al
           cd ./GitOpsConfig/resource/helm
+          ls -al
           echo "sed -i -E 's/^(image[[:blank:]]*:[[:blank:]]*).*/\1100.100.103.167:5000\/kyh-test:${{ env.RELEASE_VERSION }}/' values.yaml"
           sed -i -E 's/^(image[[:blank:]]*:[[:blank:]]*).*/\1100.100.103.167:5000\/kyh-test:${{ env.RELEASE_VERSION }}/' values.yaml
           cd ../..
+          ls -al
           echo "1"
           git config --global user.email "github-actions@github.com"
           echo "2"
