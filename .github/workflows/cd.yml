@@ -47,7 +47,6 @@ jobs:
         with:
           repository: kyh0703/GitOpsApp
           token: ${{ secrets.ACTION_TOKEN }}
-          path: /resource/helm/
 
       - name: Commit And Push
         run: |
