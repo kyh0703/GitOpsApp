@@ -9,7 +9,7 @@ on:
 # 여러 job이 있을경우, Default로 병렬 실행
 # uses는 어떤 액션을 사용할지 지정함. 이미 만들어진 액션을 사용할 때 지정
 jobs:
-  build:
+  docker-image-ci:
     # 어떤 OS에서 실행될지 지정
     runs-on: self-hosted
     steps:
@@ -43,29 +43,37 @@ jobs:
             100.100.103.167:5000/kyh-test:latest
             100.100.103.167:5000/kyh-test:${{ env.RELEASE_VERSION }}
 
-      - name: checkout Config repository
+      # - name: checkout Config repository
+      #   uses: actions/checkout@v2
+      #   with:
+      #     repository: kyh0703/GitOpsConfig
+      #     token: ${{ secrets.ACTION_TOKEN }}
+      #     path: GitOpsConfig
+
+
+  docker-image-cd:
+      runs-on: ubuntu-latest
+      steps:
+      - name: Checkout deploy repo
         uses: actions/checkout@v2
         with:
           repository: kyh0703/GitOpsConfig
-          ref: master
           token: ${{ secrets.ACTION_TOKEN }}
           path: GitOpsConfig
 
-      - name: Commit And Push
+      - name: Commit
         run: |
-          ls -al
           cd ./GitOpsConfig/resource/helm
-          ls -al
           echo "sed -i -E 's/^(image[[:blank:]]*:[[:blank:]]*).*/\1100.100.103.167:5000\/kyh-test:${{ env.RELEASE_VERSION }}/' values.yaml"
           sed -i -E 's/^(image[[:blank:]]*:[[:blank:]]*).*/\1100.100.103.167:5000\/kyh-test:${{ env.RELEASE_VERSION }}/' values.yaml
-          cd ../..
-          ls -al
-          echo "1"
           git config --global user.email "github-actions@github.com"
-          echo "2"
           git config --global user.name "github-actions"
-          echo "3"
           git commit -am "Update image tag"
-          echo "4"
-          git push -u origin master
-          echo "5"
+
+      - name: Push
+        uses: ad-m/github-push-action@master
+        with:
+          directory: GitOpsConfig
+          repository: kyh0703/GitOpsConfig
+          github_token: ${{ secrets.ACTION_TOKEN }}
+          force: true
