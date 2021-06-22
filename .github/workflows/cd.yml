@@ -53,8 +53,8 @@ jobs:
       - name: Commit And Push
         run: |
           cd ./GitOpsConfig/resource/helm
-          sed -E 's/^(image[[:blank:]]*:[[:blank:]]*).*/\${{ secrets.DOCKER_PRIVATE_REGISTRY }}/kyh-test:${{ env.RELEASE_VERSION }}/' values.yaml
           echo "sed -E 's/^(image[[:blank:]]*:[[:blank:]]*).*/\${{ secrets.DOCKER_PRIVATE_REGISTRY }}/kyh-test:${{ env.RELEASE_VERSION }}/' values.yaml"
+          sed -E 's/^(image[[:blank:]]*:[[:blank:]]*).*/\${{ secrets.DOCKER_PRIVATE_REGISTRY }}/kyh-test:${{ env.RELEASE_VERSION }}/' values.yaml
           git config --global user.email "github-actions@github.com"
           git config --global user.name "github-actions"
           git commit -am "Update image tag"
