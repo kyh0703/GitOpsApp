@@ -45,9 +45,9 @@ jobs:
       - name: checkout Config repository
         uses: actions/checkout@v2
         with:
-          repository: kyh0703/GitOpsApp
+          repository: kyh0703/GitOpsConfig
           token: ${{ secrets.ACTION_TOKEN }}
-          path: GitOpsApp
+          path: GitOpsConfig
 
       - name: Commit And Push
         run: |
