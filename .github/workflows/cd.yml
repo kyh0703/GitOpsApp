@@ -52,28 +52,33 @@ jobs:
 
 
   docker-image-cd:
-      runs-on: ubuntu-latest
-      steps:
-      - name: Checkout deploy repo
-        uses: actions/checkout@v2
-        with:
-          repository: kyh0703/GitOpsConfig
-          token: ${{ secrets.ACTION_TOKEN }}
-          path: GitOpsConfig
+    needs: docker-image-ci
+    runs-on: ubuntu-latest
+    steps:
+    - name: Set env
+      run: |
+        echo "RELEASE_VERSION=${GITHUB_REF#refs/*/v}" >> $GITHUB_ENV
 
-      - name: Commit
-        run: |
-          cd ./GitOpsConfig/resource/helm
-          echo "sed -i -E 's/^(image[[:blank:]]*:[[:blank:]]*).*/\1100.100.103.167:5000\/kyh-test:${{ env.RELEASE_VERSION }}/' values.yaml"
-          sed -i -E 's/^(image[[:blank:]]*:[[:blank:]]*).*/\1100.100.103.167:5000\/kyh-test:${{ env.RELEASE_VERSION }}/' values.yaml
-          git config --global user.email "github-actions@github.com"
-          git config --global user.name "github-actions"
-          git commit -am "Update image tag"
+    - name: Checkout deploy repo
+      uses: actions/checkout@v2
+      with:
+        repository: kyh0703/GitOpsConfig
+        token: ${{ secrets.ACTION_TOKEN }}
+        path: GitOpsConfig
 
-      - name: Push
-        uses: ad-m/github-push-action@master
-        with:
-          directory: GitOpsConfig
-          repository: kyh0703/GitOpsConfig
-          github_token: ${{ secrets.ACTION_TOKEN }}
-          force: true
+    - name: Commit
+      run: |
+        cd ./GitOpsConfig/resource/helm
+        echo "sed -i -E 's/^(image[[:blank:]]*:[[:blank:]]*).*/\1100.100.103.167:5000\/kyh-test:${{ env.RELEASE_VERSION }}/' values.yaml"
+        sed -i -E 's/^(image[[:blank:]]*:[[:blank:]]*).*/\1100.100.103.167:5000\/kyh-test:${{ env.RELEASE_VERSION }}/' values.yaml
+        git config --global user.email "github-actions@github.com"
+        git config --global user.name "github-actions"
+        git commit -am "Update image tag"
+
+    - name: Push
+      uses: ad-m/github-push-action@master
+      with:
+        directory: GitOpsConfig
+        repository: kyh0703/GitOpsConfig
+        github_token: ${{ secrets.ACTION_TOKEN }}
+        force: true
