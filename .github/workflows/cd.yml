@@ -1,51 +1,41 @@
-# This is a basic workflow to help you get started with Actions
-
 name: CI
-
-# Controls when the action will run. 
 on:
-  # Triggers the workflow on push or pull request events but only for the main branch
   push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
+    tags:
+      - 'v*'
 
-  # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+# 여러 job이 있을경우, Default로 병렬 실행
+# uses는 어떤 액션을 사용할지 지정함. 이미 만들어진 액션을 사용할 때 지정
 jobs:
-  # This workflow contains a single job called "build"
   build:
-    # The type of runner that the job will run on
+    # 어떤 OS에서 실행될지 지정
     runs-on: ubuntu-latest
-
-    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      - name: Get version
-        id: image
-        run: |
-          VERSION=$(echo ${{ github.sha }} | cut -c1-8)
-          echo VERSION=$VERSION
-          echo "::set-output name=version::$VERSION"
-          
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      #- uses: actions/checkout@v2
+      - name: Checkout
+        uses: actions/checkout@v2
 
-      # Runs a single command using the runners shell
-      #- name: Run a one-line script
-#        run: echo Hello, world!
+      - name: Set env
+        run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/v}" >> $GITHUB_ENV
 
-      # Runs a set of commands using the runners shell
-#      - name: Run a multi-line script
-#        run: |
- #         echo Add other actions to build,
-  #        echo test, and deploy your project.
-      # 수정된 파일 commit & push
-   #   - name: Commit files
-    #    run: |
-     #     cd example-app-kustomize
-      #    git config --global user.email "github-actions@github.com"
-       #   git config --global user.name "github-actions"
-        #  git commit -am "Update image tag"
-#          git push -u origin dev
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v1
+        with:
+          registry: 100.100.103.167:5000
+          username: admin
+          password: dnflth
+
+      # - name: Build and push
+      #   uses: docker/build-push-action@v2
+      #   id: docker_build
+      #   with:
+      #     context: .
+      #     file: ./Dockerfile
+      #     push: true
+      #     tags: |
+      #       ghcr.io/${{ github.repository_owner }}/my-container-test:latest
+      #       ghcr.io/${{ github.repository_owner }}/my-container-test:${{ env.RELEASE_VERSION }}
